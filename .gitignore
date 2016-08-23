@@ -1,6 +1,12 @@
 # tensorflow summaries
 summaries/*
 
+# macos
+.DS_Store
+
+# training data
+MNIST_data/*
+
 # Created by https://www.gitignore.io/api/python
 
 ### Python ###
