@@ -67,9 +67,11 @@ with tf.Session() as sess:
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
     summary_writer = tf.train.SummaryWriter(FLAGS.logdir, sess.graph)
 
-    for i in range(100):
+    for i in range(1000):
         summary, _ = sess.run([summary_op, train_step])
         summary_writer.add_summary(summary, i)
 
     coord.request_stop()
     coord.join(threads)
+
+# TODO(irapha): sample latent vector and generate.
