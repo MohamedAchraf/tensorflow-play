@@ -34,6 +34,9 @@ b_fc1 = tf.Variable(tf.constant(0.1, shape=[25]))
 
 h_fc1 = tf.nn.relu(tf.matmul(h_conv2_vec, W_fc1) + b_fc1)
 
+# TODO(irapha): make latent space larger, probably will help results
+# TODO(irapha): make variational
+
 # Second fully connected layer, from latent to downsized image vector
 W_fc2 = tf.Variable(tf.truncated_normal([25, 8 * 8 * 5], stddev=0.1))
 b_fc2 = tf.Variable(tf.constant(0.1, shape=[8 * 8 * 5]))
