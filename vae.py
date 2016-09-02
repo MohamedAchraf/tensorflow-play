@@ -7,7 +7,7 @@ flags.DEFINE_string('logdir', 'summaries', 'The summaries folder')
 flags.DEFINE_string('exp', 'exp', 'The experiment name, used for logging.')
 flags.DEFINE_boolean('train', False, 'Whether to perform training op.'
         'Tries restoring from checkpoint if false')
-flags.DEFINE_integer('train_steps', 1000, 'How many steps tro train the vae for')
+flags.DEFINE_integer('train_steps', 3000, 'How many steps tro train the vae for')
 
 cifar10.maybe_download_and_extract()
 
@@ -29,8 +29,8 @@ h_conv2 = tf.nn.relu(
 
 # Fully connected layer, towards latent representation (of len 25)
 h_conv2_vec = tf.reshape(h_conv2, [128, -1])
-W_fc1 = tf.Variable(tf.truncated_normal([8 * 8 * 5, 25], stddev=0.1))
-b_fc1 = tf.Variable(tf.constant(0.1, shape=[25]))
+W_fc1 = tf.Variable(tf.truncated_normal([8 * 8 * 5, 50], stddev=0.1))
+b_fc1 = tf.Variable(tf.constant(0.1, shape=[50]))
 
 h_fc1 = tf.nn.relu(tf.matmul(h_conv2_vec, W_fc1) + b_fc1)
 
@@ -38,7 +38,7 @@ h_fc1 = tf.nn.relu(tf.matmul(h_conv2_vec, W_fc1) + b_fc1)
 # TODO(irapha): make variational
 
 # Second fully connected layer, from latent to downsized image vector
-W_fc2 = tf.Variable(tf.truncated_normal([25, 8 * 8 * 5], stddev=0.1))
+W_fc2 = tf.Variable(tf.truncated_normal([50, 8 * 8 * 5], stddev=0.1))
 b_fc2 = tf.Variable(tf.constant(0.1, shape=[8 * 8 * 5]))
 h_fc2 = tf.nn.relu(tf.matmul(h_fc1, W_fc2) + b_fc2)
 
@@ -65,22 +65,23 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 tf.scalar_summary('loss', loss)
 
 # Sampling from a given latent vector
-tf.image_summary('initial_images', images, max_images=10)
+if not FLAGS.train:
+    tf.image_summary('initial_images', images, max_images=10)
 
-h_conv1_sample = tf.nn.relu(
-        tf.nn.conv2d(images, W_conv1, strides=[1, 1, 1, 1], padding='SAME') + b_conv1)
-h_conv2_sample = tf.nn.relu(
-        tf.nn.conv2d(h_conv1_sample, W_conv2, strides=[1, 3, 3, 1], padding='SAME') + b_conv2)
-h_conv2_vec_sample = tf.reshape(h_conv2_sample, [128, -1])
-h_fc1_sample = tf.nn.relu(tf.matmul(h_conv2_vec_sample, W_fc1) + b_fc1)
-h_fc2_sample = tf.nn.relu(tf.matmul(h_fc1_sample, W_fc2) + b_fc2)
-h_fc2_mtrx_sample = tf.reshape(h_fc2_sample, [128, 8, 8, 5])
-h_deconv1_sample = tf.nn.relu(
-        tf.nn.conv2d_transpose(h_fc2_mtrx_sample, W_deconv1, [128, 8, 8, 25], [1, 1, 1, 1], padding='SAME') + b_deconv1)
-h_deconv2_sample = tf.nn.relu(
-        tf.nn.conv2d_transpose(h_deconv1_sample, W_deconv2, [128, 24, 24, 3], [1, 3, 3, 1], padding='SAME') + b_deconv2)
+    h_conv1_sample = tf.nn.relu(
+            tf.nn.conv2d(images, W_conv1, strides=[1, 1, 1, 1], padding='SAME') + b_conv1)
+    h_conv2_sample = tf.nn.relu(
+            tf.nn.conv2d(h_conv1_sample, W_conv2, strides=[1, 3, 3, 1], padding='SAME') + b_conv2)
+    h_conv2_vec_sample = tf.reshape(h_conv2_sample, [128, -1])
+    h_fc1_sample = tf.nn.relu(tf.matmul(h_conv2_vec_sample, W_fc1) + b_fc1)
+    h_fc2_sample = tf.nn.relu(tf.matmul(h_fc1_sample, W_fc2) + b_fc2)
+    h_fc2_mtrx_sample = tf.reshape(h_fc2_sample, [128, 8, 8, 5])
+    h_deconv1_sample = tf.nn.relu(
+            tf.nn.conv2d_transpose(h_fc2_mtrx_sample, W_deconv1, [128, 8, 8, 25], [1, 1, 1, 1], padding='SAME') + b_deconv1)
+    h_deconv2_sample = tf.nn.relu(
+            tf.nn.conv2d_transpose(h_deconv1_sample, W_deconv2, [128, 24, 24, 3], [1, 3, 3, 1], padding='SAME') + b_deconv2)
 
-tf.image_summary('final_images', h_deconv2_sample, max_images=10)
+    tf.image_summary('final_images', h_deconv2_sample, max_images=10)
 
 summary_op = tf.merge_all_summaries()
 
