@@ -7,13 +7,13 @@ training_data = []
 
 for i in range(num_points):
     x1 = np.random.normal(0.0, 0.55)
-    y1 = x1 * 0.1 + 0.3 + np.random.normal(0.0, 0.03)
+    y1 = x1 * 0.1 + 0.3 + np.random.normal(0.0, 0.03) # OUR BIAS AND WEIGHT.
     training_data.append([x1, y1])
 
 x_data, y_data = zip(*training_data)
 
-# plt.plot(x_data, y_data, 'ro')
-# plt.show()
+plt.plot(x_data, y_data, 'ro')
+plt.show()
 
 # start TensorFlow
 flags = tf.app.flags
@@ -54,6 +54,8 @@ with tf.Session() as sess:
                 feed_dict={x: x_data, y_truth: y_data})
         summary_writer.add_summary(summary, step)
 
-    print(step, sess.run(W), sess.run(b))
+    print(sess.run(W), sess.run(b))
 
-
+    plt.plot(x_data, y_data, 'ro')
+    plt.plot(x_data, sess.run(W) * x_data + sess.run(b))
+    plt.show()
