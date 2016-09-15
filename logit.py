@@ -18,7 +18,7 @@ plt.show()
 # start TensorFlow
 flags = tf.app.flags
 FLAGS = flags.FLAGS
-flags.DEFINE_string('train_dir', 'summaries', 'The summaries folder')
+flags.DEFINE_string('train_dir', 'summaries/logit', 'The summaries folder')
 
 W = tf.Variable(tf.random_uniform([1], -1.0, 1.0), name='W')
 b = tf.Variable(tf.zeros([1]), name='b')
