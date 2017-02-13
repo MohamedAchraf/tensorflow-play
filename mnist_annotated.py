@@ -13,20 +13,20 @@ flags.DEFINE_string('train_dir', 'summaries', 'Directory for storing summaries')
 mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
 # Placeholders
-x = tf.placeholder(tf.float32, [None, 784])
-y_truth = tf.placeholder(tf.float32, [None, 10])
+x = tf.placeholder(tf.float32, [None, 784], name='x')
+y_truth = tf.placeholder(tf.float32, [None, 10], name='y_truth')
 
 # First layer
-W1 = tf.Variable(tf.truncated_normal([784, 20]))
-b1 = tf.Variable(tf.truncated_normal([20]))
+W1 = tf.Variable(tf.truncated_normal([784, 20]), name='w1')
+b1 = tf.Variable(tf.truncated_normal([20]), name='b1')
 z = tf.matmul(x, W1) + b1
 h = tf.nn.sigmoid(z)
 
 tf.histogram_summary('W1', W1)
 
 # Second layer
-W2 = tf.Variable(tf.truncated_normal([20, 10]))
-b2 = tf.Variable(tf.truncated_normal([10]))
+W2 = tf.Variable(tf.truncated_normal([20, 10]), name='w2')
+b2 = tf.Variable(tf.truncated_normal([10]), name='b2')
 y = tf.matmul(h, W2) + b2
 
 tf.histogram_summary('W2', W2)
