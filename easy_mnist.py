@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import sys
 from tensorflow.examples.tutorials.mnist import input_data
-import tensorflow as tf
+import tensorflow as tf # 0.9.0
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
